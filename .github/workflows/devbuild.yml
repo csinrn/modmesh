@@ -8,89 +8,89 @@ on:
 
 jobs:
 
-  standalone_buffer:
+  # standalone_buffer:
 
-    if: ${{ github.event_name != 'schedule' || (github.event_name == 'schedule' && vars.MMGH_NIGHTLY == 'enable') }}
+  #   if: ${{ github.event_name != 'schedule' || (github.event_name == 'schedule' && vars.MMGH_NIGHTLY == 'enable') }}
 
-    name: standalone_buffer_${{ matrix.os }}
+  #   name: standalone_buffer_${{ matrix.os }}
 
-    runs-on: ${{ matrix.os }}
+  #   runs-on: ${{ matrix.os }}
 
-    strategy:
-      matrix:
-        os: [ubuntu-22.04]
-        cmake_build_type: [Release]
+  #   strategy:
+  #     matrix:
+  #       os: [ubuntu-22.04]
+  #       cmake_build_type: [Release]
 
-      fail-fast: false
+  #     fail-fast: false
 
-    steps:
+  #   steps:
 
-      - uses: actions/checkout@v1
-        with:
-          fetch-depth: 1
+  #     - uses: actions/checkout@v1
+  #       with:
+  #         fetch-depth: 1
 
-      - name: event name
-        run: |
-          echo "github.event_name: ${{ github.event_name }}"
+  #     - name: event name
+  #       run: |
+  #         echo "github.event_name: ${{ github.event_name }}"
 
-      - name: dependency by apt
-        run: |
-          sudo apt-get -qqy update
-          sudo apt-get -qy install \
-              sudo curl git build-essential make cmake libc6-dev gcc g++ \
-              python3 python3-dev python3-venv
+  #     - name: dependency by apt
+  #       run: |
+  #         sudo apt-get -qqy update
+  #         sudo apt-get -qy install \
+  #             sudo curl git build-essential make cmake libc6-dev gcc g++ \
+  #             python3 python3-dev python3-venv
 
-      - name: dependency by pip
-        run: |
-          sudo pip3 install setuptools
-          sudo pip3 install numpy pytest flake8
+  #     - name: dependency by pip
+  #       run: |
+  #         sudo pip3 install setuptools
+  #         sudo pip3 install numpy pytest flake8
 
-      - name: dependency by manual script
-        run: sudo ${GITHUB_WORKSPACE}/contrib/dependency/install.sh pybind11
+  #     - name: dependency by manual script
+  #       run: sudo ${GITHUB_WORKSPACE}/contrib/dependency/install.sh pybind11
 
-      - name: show dependency
-        # Copy the commands from contrib/dependency/showdep.sh
-        run: |
-          echo "gcc path: $(which gcc)"
-          echo "gcc version: $(gcc --version)"
-          echo "cmake path: $(which cmake)"
-          echo "cmake version: $(cmake --version)"
-          echo "python3 path: $(which python3)"
-          echo "python3 version: $(python3 --version)"
-          echo "python3-config --prefix: $(python3-config --prefix)"
-          echo "python3-config --exec-prefix: $(python3-config --exec-prefix)"
-          echo "python3-config --includes: $(python3-config --includes)"
-          echo "python3-config --libs: $(python3-config --libs)"
-          echo "python3-config --cflags: $(python3-config --cflags)"
-          echo "python3-config --ldflags: $(python3-config --ldflags)"
-          echo "pip3 path: $(which pip3)"
-          python3 -c 'import numpy as np; print("np.__version__:", np.__version__, np.get_include())'
-          echo "pytest path: $(which pytest)"
-          echo "pytest version: $(pytest --version)"
-          echo "clang-tidy path: $(which clang-tidy)"
-          echo "clang-tidy version: $(clang-tidy -version)"
-          echo "flake8 path: $(which flake8)"
-          echo "flake8 version: $(flake8 --version)"
+  #     - name: show dependency
+  #       # Copy the commands from contrib/dependency/showdep.sh
+  #       run: |
+  #         echo "gcc path: $(which gcc)"
+  #         echo "gcc version: $(gcc --version)"
+  #         echo "cmake path: $(which cmake)"
+  #         echo "cmake version: $(cmake --version)"
+  #         echo "python3 path: $(which python3)"
+  #         echo "python3 version: $(python3 --version)"
+  #         echo "python3-config --prefix: $(python3-config --prefix)"
+  #         echo "python3-config --exec-prefix: $(python3-config --exec-prefix)"
+  #         echo "python3-config --includes: $(python3-config --includes)"
+  #         echo "python3-config --libs: $(python3-config --libs)"
+  #         echo "python3-config --cflags: $(python3-config --cflags)"
+  #         echo "python3-config --ldflags: $(python3-config --ldflags)"
+  #         echo "pip3 path: $(which pip3)"
+  #         python3 -c 'import numpy as np; print("np.__version__:", np.__version__, np.get_include())'
+  #         echo "pytest path: $(which pytest)"
+  #         echo "pytest version: $(pytest --version)"
+  #         echo "clang-tidy path: $(which clang-tidy)"
+  #         echo "clang-tidy version: $(clang-tidy -version)"
+  #         echo "flake8 path: $(which flake8)"
+  #         echo "flake8 version: $(flake8 --version)"
 
-      - name: print
-        run: |
-          echo "github workspace: ${{ github.workspace }}"
-          echo "pwd: $(pwd)"
-          echo "BUILD PATH: $(BUILD_PATH)"
+  #     - name: print
+  #       run: |
+  #         echo "github workspace: ${{ github.workspace }}"
+  #         echo "pwd: $(pwd)"
+  #         echo "BUILD PATH: $(BUILD_PATH)"
 
-      - name: git Cache
-        id: cache
-        uses: actions/cache@v3
-        with:
-          path: /home/runner/work/modmesh/modmesh/build/dev310/standalone_buffer/
-          key: ${{ runner.os }}-make-files-${{ github.sha }}
-          #restore-keys: |
-          #  ${{ runner.os }}-make-files-
+  #     - name: git Cache
+  #       id: cache
+  #       uses: actions/cache@v3
+  #       with:
+  #         path: /home/runner/work/modmesh/modmesh/build/dev310/standalone_buffer/
+  #         key: ${{ runner.os }}-make-files-${{ github.sha }}
+  #         #restore-keys: |
+  #         #  ${{ runner.os }}-make-files-
 
-      - name: make standalone_buffer
-        run: |
-          make standalone_buffer_setup
-          make standalone_buffer
+  #     - name: make standalone_buffer
+  #       run: |
+  #         make standalone_buffer_setup
+  #         make standalone_buffer
 
   build_ubuntu:
 
@@ -121,11 +121,6 @@ jobs:
       with:
         fetch-depth: 1
 
-    # - name: install sudo
-    #   run: |
-    #     apt update
-    #     apt install -y sudo
-
     - name: event name
       run: |
         echo "github.event_name: ${{ github.event_name }}"
@@ -155,15 +150,7 @@ jobs:
       run: |
         echo "${{github.workspace}}/Qt/"
 
-    - name: Cache node modules
-      id: cache
-      uses: actions/cache@v3
-      with:
-        path: ${{github.workspace}}/Qt/
-        key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/devbuild.yml') }}
-
-    - if: ${{ steps.cache.outputs.cache-hit != 'true' }}
-      name: install qt
+    - name: install qt
       uses: jurplel/install-qt-action@v4
       with:
         aqtversion: '==3.1.*'
@@ -207,6 +194,33 @@ jobs:
         echo "clang-tidy version: $(clang-tidy -version)"
         echo "flake8 path: $(which flake8)"
         echo "flake8 version: $(flake8 --version)"
+
+    - name: Install ccache
+      run: sudo apt-get install ccache
+
+    - name: Set up ccache
+      run: |
+        ccache -M 2G
+        cache_folder=${{ github.workspace }}/.ccache
+        echo "ccache folder=$cache_folder"
+        mkdir $cache_folder
+        ls -al ${{ github.workspace }}
+        echo "CCACHE_DIR=$cache_folder" >> $GITHUB_ENV
+        echo "CC=/usr/lib/ccache/gcc" >> $GITHUB_ENV
+        echo "CXX=/usr/lib/ccache/g++" >> $GITHUB_ENV
+
+    - name: restore ccache
+      id: cache
+      uses: actions/cache@v3
+      with:
+        path: ${{ github.workspace }}/.ccache
+        key: ${{ runner.os }}-makecache-$GITHUB_SHA
+        restore-keys: |
+          ${{ runner.os }}-makecache-
+
+    - name: Test
+      run: |
+        ls -al "${{ github.workspace }}/.ccache"
 
     - name: make gtest BUILD_QT=OFF
       run: |
@@ -264,7 +278,7 @@ jobs:
           CMAKE_BUILD_TYPE=${{ matrix.cmake_build_type }} \
           CMAKE_ARGS="-DPYTHON_EXECUTABLE=$(which python3) -DUSE_PYTEST_HELPER_BINDING=ON"
 
-    - name: make run_viewer_pytest
+    - name: make run_viewer_pytest#
       run: |
         export LD_LIBRARY_PATH=$(python3 -c "import sys, os, shiboken6; sys.stdout.write(os.path.dirname(shiboken6.__file__))")
         make run_viewer_pytest VERBOSE=0
