@@ -400,35 +400,42 @@ jobs:
           echo "flake8 path: $(which flake8)"
           echo "flake8 version: $(flake8 --version)"
 
-      - name: Install ccache
-        run: |
-          brew install ccache
-
-      - name: Set up ccache
-        run: |
-          ccache --max-size=500M
-          cache_folder=${{ github.workspace }}/.ccache
-          echo "ccache folder=$cache_folder"
-          mkdir $cache_folder
-          echo "/usr/local/opt/ccache/libexec" >> $GITHUB_PATH
-          echo $PATH
-          echo $GITHUB_PATH
-          ccache --version
-          echo "CCACHE_DIR=$cache_folder" >> $GITHUB_ENV
-          ls /opt/homebrew/opt/ccache/libexec/
-          echo "brew"
-          ls /opt/homebrew/Cellar/ccache/4.10.2_1
-          echo "CC=/opt/homebrew/opt/ccache/libexec/gcc" >> $GITHUB_ENV
-          echo "CXX=/opt/homebrew/opt/ccache/libexec/g++" >> $GITHUB_ENV
-
-      - name: restore ccache
-        id: cache
-        uses: actions/cache@v3
+      - name: ccache
+        uses: hendrikmuhs/ccache-action@v1.2
         with:
-          path: ${{ github.workspace }}/.ccache
-          key: ${{ runner.os }}-makecache-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-makecache-
+          key: ${{ runner.os }}-${{ matrix.cmake_build_type }}-makecache-${{ github.sha }}
+          restore-keys: ${{ runner.os }}-${{ matrix.cmake_build_type }}-makecache-
+          create-symlink: true
+
+      # - name: Install ccache
+      #   run: |
+      #     brew install ccache
+
+      # - name: Set up ccache
+      #   run: |
+      #     ccache --max-size=500M
+      #     cache_folder=${{ github.workspace }}/.ccache
+      #     echo "ccache folder=$cache_folder"
+      #     mkdir $cache_folder
+      #     echo "/usr/local/opt/ccache/libexec" >> $GITHUB_PATH
+      #     echo $PATH
+      #     echo $GITHUB_PATH
+      #     ccache --version
+      #     echo "CCACHE_DIR=$cache_folder" >> $GITHUB_ENV
+      #     ls /opt/homebrew/opt/ccache/libexec/
+      #     echo "brew"
+      #     ls /opt/homebrew/Cellar/ccache/4.10.2_1
+      #     echo "CC=/opt/homebrew/opt/ccache/libexec/gcc" >> $GITHUB_ENV
+      #     echo "CXX=/opt/homebrew/opt/ccache/libexec/g++" >> $GITHUB_ENV
+
+      # - name: restore ccache
+      #   id: cache
+      #   uses: actions/cache@v3
+      #   with:
+      #     path: ${{ github.workspace }}/.ccache
+      #     key: ${{ runner.os }}-makecache-${{ github.sha }}
+      #     restore-keys: |
+      #       ${{ runner.os }}-makecache-
 
       - name: make gtest BUILD_QT=OFF
         run: |
@@ -595,12 +602,18 @@ jobs:
           Get-Command clang-tidy
           Get-Command flake8
 
-      - name: ccache
-        uses: hendrikmuhs/ccache-action@v1.2
+      - name: Configure sccache
+        uses: visvirial/sccache-action@v1
         with:
-          key: ${{ runner.os }}-${{ matrix.cmake_build_type }}-makecache-${{ github.sha }}
-          restore-keys: ${{ runner.os }}-${{ matrix.cmake_build_type }}-makecache-
-          create-symlink: true
+          # The action manage the cache by Datetime tag
+          cache-key: ${{ runner.os }}-${{ matrix.cmake_build_type }}-makecache-
+
+      # - name: ccache
+      #   uses: hendrikmuhs/ccache-action@v1.2
+      #   with:
+      #     key: ${{ runner.os }}-${{ matrix.cmake_build_type }}-makecache-${{ github.sha }}
+      #     restore-keys: ${{ runner.os }}-${{ matrix.cmake_build_type }}-makecache-
+      #     create-symlink: true
 
       - name: cmake ALL_BUILD USE_PYTEST_HELPER_BINDING=OFF
         run: |
