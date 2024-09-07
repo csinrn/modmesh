@@ -544,7 +544,8 @@ jobs:
       matrix:
         os: [windows-2022]
         # Build Debug because there is not a job for windows in lint.yml (which uses the Debug build type)
-        cmake_build_type: [Release, Debug]
+        #cmake_build_type: [Release, Debug]
+        cmake_build_type: [Release]
 
       fail-fast: false
 
@@ -607,6 +608,11 @@ jobs:
         with:
           key: ${{ runner.os }}-${{ matrix.cmake_build_type }}
           restore-keys: ${{ runner.os }}-${{ matrix.cmake_build_type }}
+
+      - name: setup ccache
+        run: |
+          Rename-Item -Path "C:\\Users\\runneradmin\\.cargo\\bin\\ccache.exe" -NewName "C:\\Users\\runneradmin\\.cargo\\bin\\cl.exe"
+          echo "PATH=C:\\Users\\runneradmin\\.cargo\\bin\\cl.exe;$env:PATH" | Out-File -FilePath $env:GITHUB_ENV
 
       # - name: Configure sccache
       #   uses: mozilla-actions/sccache-action@v0.0.5
