@@ -403,9 +403,6 @@ jobs:
       - name: Install ccache
         run: |
           brew install ccache
-          echo "/usr/local/opt/ccache/libexec" >> $GITHUB_PATH
-          echo $PATH
-          ccache --version
 
       - name: Set up ccache
         run: |
@@ -413,9 +410,16 @@ jobs:
           cache_folder=${{ github.workspace }}/.ccache
           echo "ccache folder=$cache_folder"
           mkdir $cache_folder
+          echo "/usr/local/opt/ccache/libexec" >> $GITHUB_PATH
+          echo $PATH
+          echo $GITHUB_PATH
+          ccache --version
           echo "CCACHE_DIR=$cache_folder" >> $GITHUB_ENV
-          echo "CC=/usr/lib/ccache/gcc" >> $GITHUB_ENV
-          echo "CXX=/usr/lib/ccache/g++" >> $GITHUB_ENV
+          ls /opt/homebrew/opt/ccache/libexec/
+          echo "brew"
+          ls /opt/homebrew/Cellar/ccache/4.10.2_1
+          echo "CC=/opt/homebrew/opt/ccache/libexec/gcc" >> $GITHUB_ENV
+          echo "CXX=/opt/homebrew/opt/ccache/libexec/g++" >> $GITHUB_ENV
 
       - name: restore ccache
         id: cache
@@ -591,41 +595,12 @@ jobs:
           Get-Command clang-tidy
           Get-Command flake8
 
-      # - name: Install ccache
-      #   run: |
-      #     git clone -b 4.6-maint https://github.com/ccache/ccache.git
-      #     cd ccache
-      #     mkdir build
-      #     cd build
-      #     cmake -D CMAKE_BUILD_TYPE=Release ..
-      #     make
-      #     make install
-      #     cp ccache /usr/local/bin/
-      #     ccache --version
-
-      - name: Install ccache
-        run: |
-          winget install --id=Ccache.Ccache  -e
-          ccache --version
-
-      - name: Set up ccache
-        run: |
-          ccache --max-size=500M
-          cache_folder=${{ github.workspace }}/.ccache
-          echo "ccache folder=$cache_folder"
-          mkdir $cache_folder
-          echo "CCACHE_DIR=$cache_folder" >> $GITHUB_ENV
-          echo "CC=/usr/lib/ccache/gcc" >> $GITHUB_ENV
-          echo "CXX=/usr/lib/ccache/g++" >> $GITHUB_ENV
-
-      - name: restore ccache
-        id: cache
-        uses: actions/cache@v3
+      - name: ccache
+        uses: hendrikmuhs/ccache-action@v1.2
         with:
-          path: ${{ github.workspace }}/.ccache
-          key: ${{ runner.os }}-makecache-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-makecache-
+          key: ${{ runner.os }}-${{ matrix.cmake_build_type }}-makecache-${{ github.sha }}
+          restore-keys: ${{ runner.os }}-${{ matrix.cmake_build_type }}-makecache-
+          create-symlink: true
 
       - name: cmake ALL_BUILD USE_PYTEST_HELPER_BINDING=OFF
         run: |
