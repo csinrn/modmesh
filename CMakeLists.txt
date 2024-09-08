@@ -47,6 +47,20 @@ if(BUILD_QT)
     )
 endif()
 
+find_program(CCACHE_FOUND ccache) 
+if(CCACHE_FOUND)
+    message("CCACHE is found")
+    set(ENV{CC} "ccache.exe cl.exe")
+    set(ENV{CXX} "ccache.exe cl.exe")
+    
+    set(ENV{CMAKE_C_COMPILER_LAUNCHER} "${CCACHE_FOUND}")
+    set(ENV{CMAKE_CXX_COMPILER_LAUNCHER} "${CCACHE_FOUND}")
+    set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK "${CCACHE_FOUND}") # Less useful to do it for linking, see edit2
+    set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CCACHE_FOUND}")
+else(CCACHE_FOUND)
+    message("CCACHE is NOT found")
+endif(CCACHE_FOUND)
+
 find_program(
     CLANG_TIDY_EXE
     NAMES "clang-tidy"
@@ -198,17 +212,5 @@ message(STATUS "USE_GOOGLETEST: ${USE_GOOGLETEST}")
 if(USE_GOOGLETEST)
 add_subdirectory(gtests)
 endif() # USE_GOOGLETEST
-
-find_program(CCACHE_FOUND ccache) 
-if(CCACHE_FOUND)
-    message("CCACHE is found")
-    set(ENV{CC} "ccache.exe cl.exe")
-    set(ENV{CXX} "ccache.exe cl.exe")
-    #set(CMAKE_C_COMPILER_LAUNCHER C:\Users\runneradmin\.cargo\bin\ccache.exe)
-    #set(CMAKE_CXX_COMPILER_LAUNCHER C:\Users\runneradmin\.cargo\bin\ccache.exe)
-    #set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK ccache) # Less useful to do it for linking, see edit2
-else(CCACHE_FOUND)
-    message("CCACHE is NOT found")
-endif(CCACHE_FOUND)
 
 # vim: set ff=unix fenc=utf8 nobomb et sw=4 ts=4 sts=4:
