@@ -610,12 +610,12 @@ jobs:
           restore-keys: ${{ runner.os }}-${{ matrix.cmake_build_type }}
           variant: ccache
 
-      - name: setup ccache
-        run: |
-          echo "PATH=C:\\Users\\runneradmin\\.cargo\\bin;$env:PATH" | Out-File -FilePath $env:GITHUB_ENV
-          echo "CC=ccache.exe cl.exe" | Out-File -FilePath $env:GITHUB_ENV -Append
-          echo "CXX=ccache.exe cl.exe" | Out-File -FilePath $env:GITHUB_ENV -Append
-          echo "CMAKE_CXX_COMPILER_LAUNCHER=ccache" | Out-File -FilePath $env:GITHUB_ENV -Append
+      #- name: setup ccache
+      #  run: |
+      #    echo "PATH=C:\\Users\\runneradmin\\.cargo\\bin;$env:PATH" | Out-File -FilePath $env:GITHUB_ENV
+        #  echo "CC=ccache.exe cl.exe" | Out-File -FilePath $env:GITHUB_ENV -Append
+        #  echo "CXX=ccache.exe cl.exe" | Out-File -FilePath $env:GITHUB_ENV -Append
+        #  echo "CMAKE_CXX_COMPILER_LAUNCHER=ccache" | Out-File -FilePath $env:GITHUB_ENV -Append
         # Copy-Item -Path "C:\\Users\\runneradmin\\.cargo\\bin\\ccache.exe" -Destination "C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\VC\\Tools\\MSVC\\14.41.34120\\bin\\Hostx64\\x64\\cl.exe" -Force 
 
       # - name: Configure sccache
@@ -645,16 +645,18 @@ jobs:
         run: |
           cmake `
             -DCMAKE_BUILD_TYPE=${{ matrix.cmake_build_type }} `
-            -Dpybind11_DIR="$(pybind11-config --cmakedir)" `
+            -DCMAKE_CXX_COMPILER_LAUNCHER="C:\Users\runneradmin\.cargo\bin\ccache.exe" `
+            -DCMAKE_C_COMPILER_LAUNCHER="C:\Users\runneradmin\.cargo\bin\ccache.exe" `
+            -Dpybind11_DIR="$(pybind11-config --cmakedir)" ` 
             -S${{ github.workspace }} `
             -B${{ github.workspace }}/build
-            -DCMAKE_CXX_COMPILER_LAUNCHER=C:\Users\runneradmin\.cargo\bin\ccache.exe
-            -DCMAKE_C_COMPILER_LAUNCHER=C:\Users\runneradmin\.cargo\bin\ccache.exe
 
           cmake --build ${{ github.workspace }}/build `
             --config ${{ matrix.cmake_build_type }} `
             --target ALL_BUILD
 
+        #    -DCMAKE_CXX_COMPILER_LAUNCHER=ccache `
+        #    -DCMAKE_C_COMPILER_LAUNCHER=ccache
 
       # - name: cmake ALL_BUILD USE_PYTEST_HELPER_BINDING=ON
       #   run: |
