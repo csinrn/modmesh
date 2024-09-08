@@ -642,15 +642,19 @@ jobs:
       #     create-symlink: true
 
       - name: cmake ALL_BUILD USE_PYTEST_HELPER_BINDING=OFF
+        env:
+          CC: "ccache.exe cl.exe"
+          CXX: "ccache.exe cl.exe"
         run: |
           cmake `
             -DCMAKE_BUILD_TYPE=${{ matrix.cmake_build_type }} `
-            -DCMAKE_CXX_COMPILER_LAUNCHER="C:\Users\runneradmin\.cargo\bin\ccache.exe" `
-            -DCMAKE_C_COMPILER_LAUNCHER="C:\Users\runneradmin\.cargo\bin\ccache.exe" `
-            -Dpybind11_DIR="$(pybind11-config --cmakedir)" ` 
+            -DCMAKE_CXX_COMPILER_LAUNCHER=ccache `
+            -DCMAKE_C_COMPILER_LAUNCHER=ccache `
+            -D CMAKE_C_COMPILER="ccache.exe cl.exe" `
+            -D CMAKE_CXX_COMPILER="ccache.exe cl.exe" `
+            -Dpybind11_DIR="$(pybind11-config --cmakedir)" `
             -S${{ github.workspace }} `
             -B${{ github.workspace }}/build
-
           cmake --build ${{ github.workspace }}/build `
             --config ${{ matrix.cmake_build_type }} `
             --target ALL_BUILD
