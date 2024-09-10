@@ -608,14 +608,16 @@ jobs:
         with:
           key: ${{ runner.os }}-${{ matrix.cmake_build_type }}
           restore-keys: ${{ runner.os }}-${{ matrix.cmake_build_type }}
-          variant: ccache
+          variant: sccache
 
-      - name: setup ccache
+      - name: setup sccache
         run: |
           Copy-Item -Path "C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\VC\\Tools\\MSVC\\14.41.34120\\bin\\Hostx64\\x64\\cl.exe" -Destination "C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\VC\\Tools\\MSVC\\14.41.34120\\bin\\Hostx64\\x64\\_cl.exe"
-          Copy-Item -Path "C:\\Users\\runneradmin\\.cargo\\bin\\ccache.exe" -Destination "C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\VC\\Tools\\MSVC\\14.41.34120\\bin\\Hostx64\\x64\\cl.exe" -Force
+          Copy-Item -Path "C:\\Users\\runneradmin\\.cargo\\bin\\sccache.exe" -Destination "C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\VC\\Tools\\MSVC\\14.41.34120\\bin\\Hostx64\\x64\\cl.exe" -Force
           ls C:\\Users\\runneradmin\\.cargo\\bin
-          echo "CCACHE_CC=C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\VC\\Tools\\MSVC\\14.41.34120\\bin\\Hostx64\\x64\\_cl.exe" | Out-File -FilePath $env:GITHUB_ENV -Append
+          echo "SCCACHE_CC=C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\VC\\Tools\\MSVC\\14.41.34120\\bin\\Hostx64\\x64\\_cl.exe" | Out-File -FilePath $env:GITHUB_ENV -Append
+          echo "CC=C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\VC\\Tools\\MSVC\\14.41.34120\\bin\\Hostx64\\x64\\_cl.exe" | Out-File -FilePath $env:GITHUB_ENV -Append
+          echo "CXX=C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\VC\\Tools\\MSVC\\14.41.34120\\bin\\Hostx64\\x64\\_cl.exe" | Out-File -FilePath $env:GITHUB_ENV -Append
 
          #echo "PATH=C:\\Users\\runneradmin\\.cargo\\bin;$env:PATH" | Out-File -FilePath $env:GITHUB_ENV
          #echo "CC=ccache.exe cl.exe" | Out-File -FilePath $env:GITHUB_ENV -Append
@@ -652,11 +654,14 @@ jobs:
             -DCMAKE_BUILD_TYPE=${{ matrix.cmake_build_type }} `
             -Dpybind11_DIR="$(pybind11-config --cmakedir)" `
             -S${{ github.workspace }} `
-            -B${{ github.workspace }}/build
+            -B${{ github.workspace }}/build `
+            -D CMAKE_C_COMPILER="_cl.exe" `
+            -D CMAKE_CXX_COMPILER="_cl.exe"
           cmake --build ${{ github.workspace }}/build `
             --config ${{ matrix.cmake_build_type }} `
-            --target ALL_BUILD
-
+            --target ALL_BUILD `
+            -D CMAKE_C_COMPILER="_cl.exe" `
+            -D CMAKE_CXX_COMPILER="_cl.exe"
         # -DCMAKE_CXX_COMPILER_LAUNCHER=ccache `
         # -DCMAKE_C_COMPILER_LAUNCHER=ccache `
         # -D CMAKE_C_COMPILER="ccache.exe cl.exe" `
