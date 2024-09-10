@@ -610,13 +610,13 @@ jobs:
           restore-keys: ${{ runner.os }}-${{ matrix.cmake_build_type }}
           variant: ccache
 
-      #- name: setup ccache
-      #  run: |
-      #    echo "PATH=C:\\Users\\runneradmin\\.cargo\\bin;$env:PATH" | Out-File -FilePath $env:GITHUB_ENV
-        #  echo "CC=ccache.exe cl.exe" | Out-File -FilePath $env:GITHUB_ENV -Append
-        #  echo "CXX=ccache.exe cl.exe" | Out-File -FilePath $env:GITHUB_ENV -Append
-        #  echo "CMAKE_CXX_COMPILER_LAUNCHER=ccache" | Out-File -FilePath $env:GITHUB_ENV -Append
-        # Copy-Item -Path "C:\\Users\\runneradmin\\.cargo\\bin\\ccache.exe" -Destination "C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\VC\\Tools\\MSVC\\14.41.34120\\bin\\Hostx64\\x64\\cl.exe" -Force 
+      - name: setup ccache
+        run: |
+          Copy-Item -Path "C:\\Users\\runneradmin\\.cargo\\bin\\ccache.exe" -Destination "cl.exe" -Force
+         #echo "PATH=C:\\Users\\runneradmin\\.cargo\\bin;$env:PATH" | Out-File -FilePath $env:GITHUB_ENV
+         #echo "CC=ccache.exe cl.exe" | Out-File -FilePath $env:GITHUB_ENV -Append
+         #echo "CXX=ccache.exe cl.exe" | Out-File -FilePath $env:GITHUB_ENV -Append
+         #echo "CMAKE_CXX_COMPILER_LAUNCHER=ccache" | Out-File -FilePath $env:GITHUB_ENV -Append
 
       # - name: Configure sccache
       #   uses: mozilla-actions/sccache-action@v0.0.5
@@ -643,8 +643,9 @@ jobs:
 
       - name: cmake ALL_BUILD USE_PYTEST_HELPER_BINDING=OFF
         env:
-          CC: "ccache.exe cl.exe"
-          CXX: "ccache.exe cl.exe"
+          CCACHE_COMPILER: "C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\VC\\Tools\\MSVC\\14.41.34120\\bin\\Hostx64\\x64\\cl.exe"
+          CC: "C:\\Users\\runneradmin\\.cargo\\bin\\ccache.exe"
+          CXX: "C:\\Users\\runneradmin\\.cargo\\bin\\ccache.exe"
         run: |
           cmake `
             -DCMAKE_BUILD_TYPE=${{ matrix.cmake_build_type }} `
