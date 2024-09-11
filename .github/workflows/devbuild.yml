@@ -655,13 +655,13 @@ jobs:
             -Dpybind11_DIR="$(pybind11-config --cmakedir)" `
             -S${{ github.workspace }} `
             -B${{ github.workspace }}/build `
-            -D CMAKE_C_COMPILER="_cl.exe" `
-            -D CMAKE_CXX_COMPILER="_cl.exe"
+            -D CMAKE_C_COMPILER="C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\VC\\Tools\\MSVC\\14.41.34120\\bin\\Hostx64\\x64\\_cl.exe" `
+            -D CMAKE_CXX_COMPILER="C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\VC\\Tools\\MSVC\\14.41.34120\\bin\\Hostx64\\x64\\_cl.exe"
           cmake --build ${{ github.workspace }}/build `
             --config ${{ matrix.cmake_build_type }} `
             --target ALL_BUILD `
-            -D CMAKE_C_COMPILER="_cl.exe" `
-            -D CMAKE_CXX_COMPILER="_cl.exe"
+            -D CMAKE_C_COMPILER="C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\VC\\Tools\\MSVC\\14.41.34120\\bin\\Hostx64\\x64\\_cl.exe" `
+            -D CMAKE_CXX_COMPILER="C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\VC\\Tools\\MSVC\\14.41.34120\\bin\\Hostx64\\x64\\_cl.exe"
         # -DCMAKE_CXX_COMPILER_LAUNCHER=ccache `
         # -DCMAKE_C_COMPILER_LAUNCHER=ccache `
         # -D CMAKE_C_COMPILER="ccache.exe cl.exe" `
