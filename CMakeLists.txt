@@ -47,20 +47,6 @@ if(BUILD_QT)
     )
 endif()
 
-find_program(CCACHE_FOUND ccache) 
-if(CCACHE_FOUND)
-    message("CCACHE is found")
-    #set(ENV{CC} "ccache.exe cl.exe")
-    #set(ENV{CXX} "ccache.exe cl.exe")
-    
-    #set(CMAKE_C_COMPILER_LAUNCHER "${CCACHE_FOUND}")
-    #set(CMAKE_CXX_COMPILER_LAUNCHER "${CCACHE_FOUND}")
-    #set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK "${CCACHE_FOUND}") # Less useful to do it for linking, see edit2
-    #set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CCACHE_FOUND}")
-else(CCACHE_FOUND)
-    message("CCACHE is NOT found")
-endif(CCACHE_FOUND)
-
 find_program(
     CLANG_TIDY_EXE
     NAMES "clang-tidy"
@@ -188,6 +174,23 @@ set(MODMESH_PY_DIR "${PROJECT_SOURCE_DIR}/modmesh")
 
 if(MSVC)
     set(COMMON_COMPILER_OPTIONS /W4 /bigobj /WX)
+    find_program(SCCACHE sccache REQUIRED)
+    if(SCCACHE)
+        message("SCCACHE is found")
+        set(CMAKE_C_COMPILER_LAUNCHER ${SCCACHE})
+        set(CMAKE_CXX_COMPILER_LAUNCHER ${SCCACHE})
+        set(CMAKE_MSVC_DEBUG_INFORMATION_FORMAT Embedded)
+        cmake_policy(SET CMP0141 NEW)
+        #set(ENV{CC} "ccache.exe cl.exe")
+        #set(ENV{CXX} "ccache.exe cl.exe")
+        
+        #set(CMAKE_C_COMPILER_LAUNCHER "${CCACHE_FOUND}")
+        #set(CMAKE_CXX_COMPILER_LAUNCHER "${CCACHE_FOUND}")
+        #set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK "${CCACHE_FOUND}") # Less useful to do it for linking, see edit2
+        #set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CCACHE_FOUND}")
+    else(SCCACHE)
+        message("SCCACHE is NOT found")
+    endif(SCCACHE)
 else()
     set(COMMON_COMPILER_OPTIONS -Wall -Wextra)
     if(USE_CLANG_TIDY AND LINT_AS_ERRORS)
